@@ -30,22 +30,46 @@ type Existence =
     does_not_exist
   | exists (has_result | does_not_have_result)
 
-type Event (EventAge t) = event t existence
+type Event (EventAge t) = event (t, existence)
 
 type EventAge = old | new
 
 type system = (Event old, Event new)
 
 filter no_new_result_without_old_result =
-  remove system (event old (exists does_not_have_result), event new (exists has result))
+  remove system (event (old, exists does_not_have_result), event (new, exists has_result))
 
 ```
 
+Minimal example:
+```
+(event_a|event_b, other_event_a|other_event_b)
+
+becomes:
+(event_a, other_event_a)
+(event_b, other_event_a)
+(event_a, other_event_b)
+(event_b, other_event_b)
+```
+
+## Syntax
+```
+expr = tuple | variant
+
+variant = expr ( '|' expr )*
+tuple = '(' expr (',' expr)* ')'
+symbol = <string>
+```
+
+## Combinations
+```
+symbol -> just the symbol
+tuple -> multiplication of each element
+variant -> sum of each option
+```
 
 
-
-
-## Brainstorming (old)
+## Brainstorming
 
 old event exists has result, new event exists has result:
 old event exists has result, new event exists does not have result:
@@ -217,4 +241,10 @@ Is text even the best medium for this?
 
 Should at least have a repl
 
+```
+[[a, b], [c, d]]
+
+[[a, c], [a, d], [b, c], [c, d]]
+
+```
 
