@@ -5,9 +5,48 @@ module Lib
 import Language.States.Types
 import Data.Maybe (maybeToList)
 import Data.List (intersperse)
+import Control.Monad (void)
+import Text.ParserCombinators.Parsec
+import Text.ParserCombinators.Parsec.Char
+import Text.ParserCombinators.Parsec.Combinator
 
-parseExpr :: String -> Maybe Expr
-parseExpr src = Just $ ETuple[ EVariant [EVarOpt "a" Nothing, EVarOpt "x" Nothing], EVariant [EVarOpt "b" (Just (EVariant [EVarOpt "c" Nothing, EVarOpt "d" $ Just (ETuple [EVariant [EVarOpt "z" Nothing, EVarOpt "w" Nothing]])]))]] -- Tuple [Symbol "a", Variant [Symbol "b", Symbol "c"]]
+
+ident :: Parser String
+ident = many1 $ letter <|> digit <|> oneOf "_$"
+
+whitespace :: Parser ()
+whitespace = void $ many $ oneOf " \n\t"
+
+parseExpr :: String -> Either ParseError Expr
+parseExpr src = parse expr "(error)" src
+
+expr :: Parser Expr
+expr = tuple <|> variant
+
+tuple :: Parser Expr
+tuple = do
+  void $ lexeme $ char '('
+  es <- lexeme $ sepBy1 expr (lexeme $ char ',')
+  void $ lexeme $ char ')'
+  return $ ETuple es
+
+variant :: Parser Expr
+variant = do
+  vars <- lexeme $ sepBy1 variantOption (lexeme $ char '|')
+  return $ EVariant vars
+
+variantOption :: Parser EVarOption
+variantOption = do
+  i <- lexeme $ ident
+  e <- optionMaybe $ expr
+  return $ EVarOpt i e
+
+lexeme :: Parser a -> Parser a
+lexeme p = do
+  x <- p
+  whitespace
+  return x
+
 
 combinations :: Expr -> [Value]
 combinations expr = case expr of
@@ -26,12 +65,14 @@ listCombinations []       = []
 
 prettyPrint :: Value -> String
 prettyPrint val = case val of
-  VTuple vals  -> "(" ++ concatMap id (intersperse ", " (map prettyPrint vals)) ++ ")"
+  VTuple vals  -> "(" ++ concat (intersperse ", " (map prettyPrint vals)) ++ ")"
   VVariant s e -> s ++ maybe "" (\x -> " " ++ prettyPrint x) e
 
 allCombinations :: String -> [String]
 allCombinations src =
-  let expr = parseExpr src in
-  let combs = concatMap combinations (maybeToList expr) in
-  map prettyPrint combs
+  let result = parseExpr src in
+  case result of
+    Left err   -> [show err]
+    Right expr -> let combs = combinations expr in
+                  map prettyPrint combs
 
