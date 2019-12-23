@@ -65,8 +65,9 @@ listCombinations []       = []
 
 prettyPrint :: Value -> String
 prettyPrint val = case val of
-  VTuple vals  -> "(" ++ concat (intersperse ", " (map prettyPrint vals)) ++ ")"
-  VVariant s e -> s ++ maybe "" (\x -> " " ++ prettyPrint x) e
+  VTuple (v:[]) -> prettyPrint v
+  VTuple vals   -> "(" ++ concat (intersperse ", " (map prettyPrint vals)) ++ ")"
+  VVariant s e  -> s ++ maybe "" (\x -> " " ++ prettyPrint x) e
 
 allCombinations :: String -> [String]
 allCombinations src =
