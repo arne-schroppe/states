@@ -56,9 +56,9 @@ becomes:
 ```
 expr = tuple | variant
 
-variant = expr ( '|' expr )*
+variant = ident ( '|' expr )*
 tuple = '(' expr (',' expr)* ')'
-symbol = <string>
+ident = <string>
 ```
 
 ## Combinations
