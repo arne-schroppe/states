@@ -1,6 +1,7 @@
 import Lib (allCombinations)
+
+import System.Environment (getArgs)
 import Data.List (intersperse)
-import System.Environment
 import Control.Monad (void, unless)
 
 main :: IO ()
