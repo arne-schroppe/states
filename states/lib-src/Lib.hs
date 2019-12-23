@@ -4,13 +4,10 @@ module Lib
 
 import Language.States.Types
 import Data.Maybe (maybeToList)
--- import Text.ParserCombinators.Parsec
--- import Text.ParserCombinators.Parsec.Expr
+import Data.List (intersperse)
 
-
-
-parse :: String -> Maybe Expr
-parse src = Just $ ETuple[ EVariant [EVarOpt "a" Nothing, EVarOpt "x" Nothing], EVariant [EVarOpt "b" (Just (EVariant [EVarOpt "c" Nothing, EVarOpt "d" Nothing]))]] -- Tuple [Symbol "a", Variant [Symbol "b", Symbol "c"]]
+parseExpr :: String -> Maybe Expr
+parseExpr src = Just $ ETuple[ EVariant [EVarOpt "a" Nothing, EVarOpt "x" Nothing], EVariant [EVarOpt "b" (Just (EVariant [EVarOpt "c" Nothing, EVarOpt "d" $ Just (ETuple [EVariant [EVarOpt "z" Nothing, EVarOpt "w" Nothing]])]))]] -- Tuple [Symbol "a", Variant [Symbol "b", Symbol "c"]]
 
 combinations :: Expr -> [Value]
 combinations expr = case expr of
@@ -27,10 +24,14 @@ listCombinations (xs:[])  = map pure xs
 listCombinations (xs:xss) = [ a:b | a <- xs, b <- listCombinations xss ]
 listCombinations []       = []
 
+prettyPrint :: Value -> String
+prettyPrint val = case val of
+  VTuple vals  -> "(" ++ concatMap id (intersperse ", " (map prettyPrint vals)) ++ ")"
+  VVariant s e -> s ++ maybe "" (\x -> " " ++ prettyPrint x) e
 
 allCombinations :: String -> [String]
 allCombinations src =
-  let expr = parse src in
+  let expr = parseExpr src in
   let combs = concatMap combinations (maybeToList expr) in
-  map show combs
+  map prettyPrint combs
 
