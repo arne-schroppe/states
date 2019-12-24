@@ -38,6 +38,12 @@ variant = do
   vars <- lexeme $ sepBy1 variantOption (lexeme $ char '|')
   return $ EVariant vars
 
+variantOption :: Parser VariantOption
+variantOption = do
+  ident <- lexeme $ symbol
+  expr <- optionMaybe $ expression
+  return $ EVarOpt ident expr
+
 declaration :: Parser Expr
 declaration = do
   void $ try (lexeme $ keywordLet)
@@ -57,11 +63,44 @@ keyword s = do
   notFollowedBy alphaNum
   return s
 
-variantOption :: Parser VariantOption
-variantOption = do
-  ident <- lexeme $ symbol
-  expr <- optionMaybe $ expression
-  return $ EVarOpt ident expr
+pattern :: Parser Pattern
+pattern = do
+  void $ lexeme $ char '%'
+  void $ lexeme $ char '('
+  p <- patternTupleContent <|> patternVariant
+  void $ lexeme $ char ')'
+  return p
+
+patternTuple :: Parser Pattern
+patternTuple = do
+  void $ lexeme $ char '('
+  pat <- patternTupleContent
+  void $ lexeme $ char ')'
+  return pat
+
+patternTupleContent :: Parser Pattern
+patternTupleContent = do
+  pats <- lexeme $ sepBy1 pattern (lexeme $ char ',')
+  if length pats == 1
+    then return $ head pats
+    else return $ PTuple pats
+
+patternVariant :: Parser Pattern
+patternVariant = do
+  identPat <- identPattern
+  pat <- optionMaybe $ pattern
+  return $ PVariant identPat pat
+
+identPattern :: Parser IdentPattern
+identPattern = try patternWildcard <|> try patternSymbol
+
+patternWildcard :: Parser IdentPattern
+patternWildcard = (lexeme $ char '_') >> return IPWildcard
+
+patternSymbol :: Parser IdentPattern
+patternSymbol = do
+  sym <- lexeme $ symbol
+  return $ IPIdent sym
 
 symbol :: Parser String
 symbol = do
@@ -92,4 +131,5 @@ lexeme p = do
   x <- p
   whitespace
   return x
+
 

@@ -1,7 +1,11 @@
 module Language.States.Types (
   Expr(..),
   VariantOption(..),
-  Value(..)
+  Value(..),
+  Pattern(..),
+  IdentPattern(..),
+  ExprFilter(..),
+  FilterType(..),
 ) where
 
 data FilteredExpr =
