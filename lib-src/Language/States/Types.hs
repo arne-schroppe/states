@@ -4,6 +4,10 @@ module Language.States.Types (
   Value(..)
 ) where
 
+data FilteredExpr =
+    FExpr Expr [ExprFilter]
+    deriving (Show)
+
 data Expr =
     ETuple [Expr]
   | EVariant [VariantOption]
@@ -19,3 +23,22 @@ data Value =
     VTuple [Value]
   | VVariant String (Maybe Value)
   deriving (Show)
+
+data ExprFilter = EFilter FilterType Pattern
+  deriving (Show)
+
+data FilterType =
+    Remove
+--  | Only
+  deriving (Show)
+
+data Pattern =
+    PTuple [Pattern]
+  | PVariant IdentPattern (Maybe Pattern)
+  deriving (Show)
+
+data IdentPattern =
+    IPWildcard
+  | IPIdent String
+  deriving (Show)
+
