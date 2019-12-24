@@ -43,8 +43,11 @@ declaration = do
   return $ EDecl ident declExpr nextExpr
 
 keywordLet :: Parser ()
-keywordLet = do
-  void $ string "let"
+keywordLet = keyword "let"
+
+keyword :: String -> Parser ()
+keyword s = do
+  void $ string s
   notFollowedBy alphaNum
 
 variantOption :: Parser EVarOption
@@ -55,6 +58,7 @@ variantOption = do
 
 symbol :: Parser String
 symbol = do
+  notFollowedBy $ keywordLet
   first <- lower
   rest  <- identRest
   return $ first:rest
