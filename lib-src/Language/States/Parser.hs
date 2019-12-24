@@ -30,12 +30,15 @@ variant = do
 
 variantOption :: Parser EVarOption
 variantOption = do
-  i <- lexeme $ ident
+  i <- lexeme $ symbol
   e <- optionMaybe $ expr
   return $ EVarOpt i e
 
-ident :: Parser String
-ident = many1 $ letter <|> digit <|> oneOf "_$"
+symbol :: Parser String
+symbol = do
+  first <- lower
+  rest  <- many $ letter <|> digit <|> oneOf "_$"
+  return $ first:rest
 
 whitespace :: Parser ()
 whitespace = void $ many $ oneOf " \n\t"
