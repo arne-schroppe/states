@@ -39,8 +39,17 @@ variantOption = do
 symbol :: Parser String
 symbol = do
   first <- lower
-  rest  <- many $ letter <|> digit <|> oneOf "_$"
+  rest  <- identRest
   return $ first:rest
+
+varName :: Parser String
+varName = do
+  first <- upper
+  rest  <- identRest
+  return $ first:rest
+
+identRest :: Parser String
+identRest = many $ letter <|> digit <|> oneOf "_-"
 
 whitespace :: Parser ()
 whitespace = void $ many $ oneOf " \n\t"
