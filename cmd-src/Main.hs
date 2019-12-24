@@ -1,5 +1,6 @@
 import Lib (allCombinations)
 
+import System.IO
 import System.Environment (getArgs)
 import Data.List (intersperse)
 import Control.Monad (void, unless)
@@ -7,7 +8,9 @@ import Control.Monad (void, unless)
 main :: IO ()
 main = do
   args <- getArgs
-  unless (length args == 0) $ do
-    let cs = allCombinations $ head args
-    void $ mapM putStrLn cs
+  input <- if (length args == 1)
+    then return (head args)
+    else hGetContents stdin
+  let cs = allCombinations input
+  void $ mapM putStrLn cs
 
