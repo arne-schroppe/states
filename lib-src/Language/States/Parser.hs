@@ -21,7 +21,9 @@ tuple = do
   void $ lexeme $ char '('
   es <- lexeme $ sepBy1 expr (lexeme $ char ',')
   void $ lexeme $ char ')'
-  return $ ETuple es
+  if length es == 1
+    then return $ head es
+    else return $ ETuple es
 
 variant :: Parser Expr
 variant = do
