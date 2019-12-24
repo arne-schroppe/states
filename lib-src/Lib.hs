@@ -14,7 +14,7 @@ allCombinations :: String -> [String]
 allCombinations src =
   let expr = parse src >>= denormalise in
   case expr of
-    Left err   -> [show err]
+    Left err   -> [err]
     Right expr -> let combs = combinations expr in
                   map prettyPrint combs
 
