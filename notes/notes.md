@@ -248,3 +248,31 @@ Should at least have a repl
 
 ```
 
+Patterns and filters
+a filter can remove results or allow only certain results
+consists of a keyword and a pattern.
+patterns match against values, not expressions (obviously):
+```
+(_, old _ does_not_exist)
+```
+
+filter syntax
+```
+let Event = event exists (has_result | has_no_result) | does_not_exist;
+
+(old Event, new Event) {
+  remove %(_ event exists has_no_result, _ event exists has_result)
+}
+
+# or
+
+let Event = event exists (has_result | has_no_result) | does_not_exist {
+  remove %(event exists has_result)
+};
+
+(old Event, new Event)
+```
+
+should we check if patterns are even making sense? probably not, just
+try to match them
+
