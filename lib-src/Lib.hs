@@ -12,11 +12,12 @@ import Control.Monad (void)
 
 allCombinations :: String -> [String]
 allCombinations src =
-  let result = parse src in
-  case result of
+  let parsed = parse src in
+  case parsed of
     Left err   -> [show err]
     Right expr -> let combs = combinations expr in
                   map prettyPrint combs
+
 
 combinations :: Expr -> [Value]
 combinations expr = case expr of

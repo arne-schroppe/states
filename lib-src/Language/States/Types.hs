@@ -7,6 +7,8 @@ module Language.States.Types (
 data Expr =
     ETuple [Expr]
   | EVariant [EVarOption]
+  | EDecl String Expr Expr
+  | EVariable String
   deriving (Show)
 
 data EVarOption =

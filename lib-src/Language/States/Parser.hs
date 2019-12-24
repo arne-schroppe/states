@@ -11,36 +11,51 @@ import Text.ParserCombinators.Parsec.Char
 import Text.ParserCombinators.Parsec.Combinator
 
 parse :: String -> Either ParseError Expr
-parse src = Parsec.parse expr "(error)" src
+parse src = Parsec.parse expression "(error)" src
 
-expr :: Parser Expr
-expr = tuple <|> variant
+expression :: Parser Expr
+expression = declaration <|> variable <|> tuple <|> variant
 
 tuple :: Parser Expr
 tuple = do
   void $ lexeme $ char '('
-  es <- lexeme $ sepBy1 expr (lexeme $ char ',')
+  exprs <- lexeme $ sepBy1 expression (lexeme $ char ',')
   void $ lexeme $ char ')'
-  if length es == 1
-    then return $ head es
-    else return $ ETuple es
+  if length exprs == 1
+    then return $ head exprs
+    else return $ ETuple exprs
 
 variant :: Parser Expr
 variant = do
   vars <- lexeme $ sepBy1 variantOption (lexeme $ char '|')
   return $ EVariant vars
 
+declaration :: Parser Expr
+declaration = do
+  void $ lexeme $ string "let"
+  ident <- lexeme $ varName
+  void $ lexeme $ char '='
+  declExpr <- expression
+  void $ lexeme $ char ';'
+  nextExpr <- expression
+  return $ EDecl ident declExpr nextExpr
+
 variantOption :: Parser EVarOption
 variantOption = do
-  i <- lexeme $ symbol
-  e <- optionMaybe $ expr
-  return $ EVarOpt i e
+  ident <- lexeme $ symbol
+  expr <- optionMaybe $ expression
+  return $ EVarOpt ident expr
 
 symbol :: Parser String
 symbol = do
   first <- lower
   rest  <- identRest
   return $ first:rest
+
+variable :: Parser Expr
+variable = do
+  ident <- varName
+  return $ EVariable ident
 
 varName :: Parser String
 varName = do
