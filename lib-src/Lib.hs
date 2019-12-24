@@ -12,11 +12,23 @@ import Control.Monad (void)
 
 allCombinations :: String -> [String]
 allCombinations src =
-  let expr = parse src >>= denormalise in
+  let src' = removeComments src in
+  let expr = parse src' >>= denormalise in
   case expr of
-    Left err   -> [err]
+    Left err -> [err]
     Right expr -> let combs = combinations expr in
                   map prettyPrint combs
+
+-- TODO figure out which regex library is good and use regexes instead
+removeComments :: String -> String
+removeComments src = remCom False "" src
+  where
+    remCom :: Bool -> String -> String -> String
+    remCom _     processed []          = reverse processed
+    remCom False processed ('#':rest)  = remCom True processed rest
+    remCom True  processed ('\n':rest) = remCom False processed rest
+    remCom True  processed (_:rest)    = remCom True processed rest
+    remCom False processed (c:rest)    = remCom False (c:processed) rest
 
 -- This step inlines all variable declarations
 denormalise :: Expr -> Either String Expr
