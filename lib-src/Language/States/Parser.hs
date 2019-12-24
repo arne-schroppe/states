@@ -57,7 +57,7 @@ keyword s = do
   notFollowedBy alphaNum
   return s
 
-variantOption :: Parser EVarOption
+variantOption :: Parser VariantOption
 variantOption = do
   ident <- lexeme $ symbol
   expr <- optionMaybe $ expression

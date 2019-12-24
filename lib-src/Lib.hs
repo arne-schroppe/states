@@ -31,7 +31,7 @@ denormalise expr = denorm [] expr
         EVariant opts                 -> do denormOpts <- mapM (denormVarOpt decls) opts
                                             return $ EVariant denormOpts
 
-    denormVarOpt :: [(String, Expr)] -> EVarOption -> Either String EVarOption
+    denormVarOpt :: [(String, Expr)] -> VariantOption -> Either String VariantOption
     denormVarOpt decls (EVarOpt i Nothing)  = Right $ EVarOpt i Nothing
     denormVarOpt decls (EVarOpt i (Just e)) = denorm decls e >>= \de -> Right $ EVarOpt i (Just de)
 
@@ -44,7 +44,7 @@ combinations expr = case expr of
   ETuple es -> map VTuple $ listCombinations $ map combinations es
   EVariant es -> concatMap mappingFunc es
     where
-      mappingFunc :: EVarOption -> [Value]
+      mappingFunc :: VariantOption -> [Value]
       mappingFunc (EVarOpt s Nothing)  = [VVariant s Nothing]
       mappingFunc (EVarOpt s (Just e)) = let vs = combinations e in
                                          map (\x -> VVariant s $ Just x) vs

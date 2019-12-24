@@ -1,17 +1,17 @@
 module Language.States.Types (
   Expr(..),
-  EVarOption(..),
+  VariantOption(..),
   Value(..)
 ) where
 
 data Expr =
     ETuple [Expr]
-  | EVariant [EVarOption]
+  | EVariant [VariantOption]
   | EDecl String Expr Expr
   | EVariable String
   deriving (Show)
 
-data EVarOption =
+data VariantOption =
     EVarOpt String (Maybe Expr)
   deriving (Show)
 
