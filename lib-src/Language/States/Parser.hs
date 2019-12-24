@@ -10,8 +10,10 @@ import Text.ParserCombinators.Parsec as Parsec
 import Text.ParserCombinators.Parsec.Char
 import Text.ParserCombinators.Parsec.Combinator
 
-parse :: String -> Either ParseError Expr
-parse src = Parsec.parse expression "(error)" src
+parse :: String -> Either String Expr
+parse src = case Parsec.parse expression "(error)" src of
+  Left e  -> Left $ show e
+  Right r -> Right r
 
 expression :: Parser Expr
 expression = declaration <|> variable <|> tuple <|> variant

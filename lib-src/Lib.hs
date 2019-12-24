@@ -12,12 +12,32 @@ import Control.Monad (void)
 
 allCombinations :: String -> [String]
 allCombinations src =
-  let parsed = parse src in
-  case parsed of
+  let expr = parse src >>= denormalise in
+  case expr of
     Left err   -> [show err]
     Right expr -> let combs = combinations expr in
                   map prettyPrint combs
 
+-- This step inlines all variable declarations
+denormalise :: Expr -> Either String Expr
+denormalise expr = denorm [] expr
+  where
+    denorm :: [(String, Expr)] -> Expr -> Either String Expr
+    denorm decls exp =
+      case exp of
+        EDecl ident declExpr bodyExpr -> denorm ((ident, declExpr):decls) bodyExpr
+        EVariable ident               -> findDecl ident decls
+        ETuple es                     -> mapM (denorm decls) es >>= Right . ETuple
+        EVariant opts                 -> do denormOpts <- mapM (denormVarOpt decls) opts
+                                            return $ EVariant denormOpts
+
+    denormVarOpt :: [(String, Expr)] -> EVarOption -> Either String EVarOption
+    denormVarOpt decls (EVarOpt i Nothing)  = Right $ EVarOpt i Nothing
+    denormVarOpt decls (EVarOpt i (Just e)) = denorm decls e >>= \de -> Right $ EVarOpt i (Just de)
+
+    findDecl :: String -> [(String, Expr)] -> Either String Expr
+    findDecl ident []           = Left $ "Unknown variable '" ++ ident ++ "'"
+    findDecl ident ((i,e):rest) = if ident == i then Right e else findDecl ident rest
 
 combinations :: Expr -> [Value]
 combinations expr = case expr of
