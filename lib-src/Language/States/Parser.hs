@@ -11,9 +11,15 @@ import Text.ParserCombinators.Parsec.Char
 import Text.ParserCombinators.Parsec.Combinator
 
 parse :: String -> Either String Expr
-parse src = case Parsec.parse expression "(error)" src of
+parse src = case Parsec.parse allInput "error" src of
   Left e  -> Left $ show e
   Right r -> Right r
+
+allInput :: Parser Expr
+allInput = do
+  expr <- expression
+  eof
+  return expr
 
 expression :: Parser Expr
 expression = declaration <|> variable <|> tuple <|> variant
