@@ -25,7 +25,7 @@ denormalise expr = denorm [] expr
     denorm :: [(String, Expr)] -> Expr -> Either String Expr
     denorm decls exp =
       case exp of
-        EDecl ident declExpr bodyExpr -> denorm ((ident, declExpr):decls) bodyExpr
+        EDecl ident declExpr bodyExpr -> denorm decls declExpr >>= \e -> denorm ((ident, e):decls) bodyExpr
         EVariable ident               -> findDecl ident decls
         ETuple es                     -> mapM (denorm decls) es >>= Right . ETuple
         EVariant opts                 -> do denormOpts <- mapM (denormVarOpt decls) opts
