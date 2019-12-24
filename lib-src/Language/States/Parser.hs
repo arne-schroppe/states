@@ -34,13 +34,18 @@ variant = do
 
 declaration :: Parser Expr
 declaration = do
-  void $ lexeme $ string "let"
+  void $ try (lexeme $ keywordLet)
   ident <- lexeme $ varName
   void $ lexeme $ char '='
   declExpr <- expression
   void $ lexeme $ char ';'
   nextExpr <- expression
   return $ EDecl ident declExpr nextExpr
+
+keywordLet :: Parser ()
+keywordLet = do
+  void $ string "let"
+  notFollowedBy alphaNum
 
 variantOption :: Parser EVarOption
 variantOption = do
