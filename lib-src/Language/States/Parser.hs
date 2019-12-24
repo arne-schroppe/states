@@ -42,13 +42,14 @@ declaration = do
   nextExpr <- expression
   return $ EDecl ident declExpr nextExpr
 
-keywordLet :: Parser ()
+keywordLet :: Parser String
 keywordLet = keyword "let"
 
-keyword :: String -> Parser ()
+keyword :: String -> Parser String
 keyword s = do
   void $ string s
   notFollowedBy alphaNum
+  return s
 
 variantOption :: Parser EVarOption
 variantOption = do
