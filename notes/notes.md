@@ -276,3 +276,13 @@ let Event = event exists (has_result | has_no_result) | does_not_exist {
 should we check if patterns are even making sense? probably not, just
 try to match them
 
+Can also have named events:
+```
+let Event = event exists (has_result | has_no_result) | does_not_exist;
+
+(old Event, new Event) {
+  newer_results_only = remove %(_ event exists has_no_result, _ event exists has_result)
+}
+```
+Could be useful for enabling/disabling certain filters
+
