@@ -5,6 +5,7 @@ import System.Environment (getArgs)
 import Data.List (intersperse)
 import Control.Monad (void, unless)
 
+
 main :: IO ()
 main = do
   args <- getArgs
@@ -12,6 +13,8 @@ main = do
     then return (head args)
     else hGetContents stdin
   -- testParse input
-  let cs = allCombinations input
-  void $ mapM putStrLn cs
+  let result = allCombinations input
+  case result of
+    Left err -> putStrLn err
+    Right cs -> void $ mapM putStrLn cs
 

@@ -4,6 +4,7 @@ module Language.States.Denormaliser (
 
 import Language.States.Types
 
+
 -- This step inlines all variable declarations
 denormalise :: FilteredExpr -> Either String FilteredExpr
 denormalise (FExpr expr filters) = do

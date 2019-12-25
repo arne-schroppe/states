@@ -4,11 +4,12 @@ module Language.States.Combinations (
 
 import Language.States.Types
 
+
 filteredCombinations :: FilteredExpr -> [Value]
 filteredCombinations (FExpr expr filters) =
   let values = combinations expr in
-  let filteredValues = filterValues values filters in
-  filteredValues
+  filterValues values filters
+
 
 combinations :: Expr -> [Value]
 combinations expr = case expr of
@@ -24,6 +25,7 @@ listCombinations :: [[a]] -> [[a]]
 listCombinations (xs:[])  = map pure xs
 listCombinations (xs:xss) = [ a:b | a <- xs, b <- listCombinations xss ]
 listCombinations []       = []
+
 
 filterValues :: [Value] -> [ExprFilter] -> [Value]
 filterValues values filters = filter (not . (flip matchesFilters) filters) values

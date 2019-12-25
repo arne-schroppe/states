@@ -1,8 +1,7 @@
 module Language.States.Parser (
   Language.States.Parser.parse
 , testParse
-)
-where
+) where
 
 import Language.States.Types
 
@@ -10,8 +9,6 @@ import Control.Monad (void)
 import Text.ParserCombinators.Parsec as Parsec
 import Text.ParserCombinators.Parsec.Char
 
-testParse :: String -> IO ()
-testParse = Parsec.parseTest parseAll
 
 parse :: String -> Either String FilteredExpr
 parse src = case Parsec.parse parseAll "error" src of
@@ -156,4 +153,8 @@ lexeme p = do
   whitespace
   return x
 
+
+-- Debugging
+testParse :: String -> IO ()
+testParse = Parsec.parseTest parseAll
 

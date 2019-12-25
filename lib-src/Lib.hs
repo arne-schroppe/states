@@ -12,14 +12,13 @@ import Data.Maybe (maybeToList)
 import Data.List (intersperse)
 import Control.Monad (void)
 
-allCombinations :: String -> [String]
-allCombinations src =
-  let src' = removeComments src in
-  let expr = parse src' >>= denormalise in
-  case expr of
-    Left err -> [err]
-    Right expr -> let combs = filteredCombinations expr in
-                  map prettyPrint combs
+
+allCombinations :: String -> Either String [String]
+allCombinations src = do
+  expr <- (parse . removeComments) src
+  denormExpr <- denormalise expr
+  let combs = filteredCombinations denormExpr
+  return $ map prettyPrint combs
 
 -- TODO figure out which regex library is good and use regexes instead
 removeComments :: String -> String
@@ -32,7 +31,6 @@ removeComments src =
     remCom True  processed ('\n':rest) = remCom False processed rest
     remCom True  processed (_:rest)    = remCom True processed rest
     remCom False processed (c:rest)    = remCom False (c:processed) rest
-
 
 prettyPrint :: Value -> String
 prettyPrint val = case val of
