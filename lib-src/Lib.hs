@@ -16,12 +16,14 @@ allCombinations src =
   let expr = parse src' >>= denormalise in
   case expr of
     Left err -> [err]
-    Right expr -> let combs = combinations expr in
+    Right expr -> -- [show expr]
+                  let combs = filteredCombinations expr in
                   map prettyPrint combs
 
 -- TODO figure out which regex library is good and use regexes instead
 removeComments :: String -> String
-removeComments src = remCom False "" src
+removeComments src =
+  remCom False "" src
   where
     remCom :: Bool -> String -> String -> String
     remCom _     processed []          = reverse processed
@@ -31,25 +33,30 @@ removeComments src = remCom False "" src
     remCom False processed (c:rest)    = remCom False (c:processed) rest
 
 -- This step inlines all variable declarations
-denormalise :: Expr -> Either String Expr
-denormalise expr = denorm [] expr
+denormalise :: FilteredExpr -> Either String FilteredExpr
+denormalise (FExpr expr filters) = do
+    e <- denorm [] expr
+    return $ FExpr e filters
   where
     denorm :: [(String, Expr)] -> Expr -> Either String Expr
     denorm decls exp =
       case exp of
-        EDecl ident declExpr bodyExpr -> denorm decls declExpr >>= \e -> denorm ((ident, e):decls) bodyExpr
+        EDecl ident declExpr bodyExpr -> do e <- denorm decls declExpr; denorm ((ident, e):decls) bodyExpr
         EVariable ident               -> findDecl ident decls
-        ETuple es                     -> mapM (denorm decls) es >>= Right . ETuple
+        ETuple es                     -> do des <- mapM (denorm decls) es; return $ ETuple des
         EVariant opts                 -> do denormOpts <- mapM (denormVarOpt decls) opts
                                             return $ EVariant denormOpts
 
     denormVarOpt :: [(String, Expr)] -> VariantOption -> Either String VariantOption
     denormVarOpt decls (EVarOpt i Nothing)  = Right $ EVarOpt i Nothing
-    denormVarOpt decls (EVarOpt i (Just e)) = denorm decls e >>= \de -> Right $ EVarOpt i (Just de)
+    denormVarOpt decls (EVarOpt i (Just e)) = do de <- denorm decls e; return $ EVarOpt i (Just de)
 
     findDecl :: String -> [(String, Expr)] -> Either String Expr
     findDecl ident []           = Left $ "Unknown variable '" ++ ident ++ "'"
     findDecl ident ((i,e):rest) = if ident == i then Right e else findDecl ident rest
+
+filteredCombinations :: FilteredExpr -> [Value]
+filteredCombinations (FExpr expr filters) = combinations expr
 
 combinations :: Expr -> [Value]
 combinations expr = case expr of

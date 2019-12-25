@@ -6,6 +6,7 @@ module Language.States.Types (
   IdentPattern(..),
   ExprFilter(..),
   FilterType(..),
+  FilteredExpr(..),
 ) where
 
 data FilteredExpr =
