@@ -17,6 +17,7 @@ parse src = case Parsec.parse parseAll "error" src of
 
 parseAll :: Parser FilteredExpr
 parseAll = do
+  whitespace
   expr <- filteredExpr
   eof
   return expr
