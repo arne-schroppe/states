@@ -1,5 +1,6 @@
 module Language.States.Parser (
   Language.States.Parser.parse
+, testParse
 )
 where
 
@@ -8,15 +9,17 @@ import Language.States.Types
 import Control.Monad (void)
 import Text.ParserCombinators.Parsec as Parsec
 import Text.ParserCombinators.Parsec.Char
-import Text.ParserCombinators.Parsec.Combinator
+
+testParse :: String -> IO ()
+testParse = Parsec.parseTest parseAll
 
 parse :: String -> Either String FilteredExpr
-parse src = case Parsec.parse allInput "error" src of
+parse src = case Parsec.parse parseAll "error" src of
   Left e  -> Left $ show e
   Right r -> Right r
 
-allInput :: Parser FilteredExpr
-allInput = do
+parseAll :: Parser FilteredExpr
+parseAll = do
   expr <- filteredExpr
   eof
   return expr
@@ -24,7 +27,8 @@ allInput = do
 filteredExpr :: Parser FilteredExpr
 filteredExpr = do
   expr <- expression
-  return $ FExpr expr []
+  filters <- option [] filterBlock
+  return $ FExpr expr filters
 
 expression :: Parser Expr
 expression = declaration <|> variable <|> tuple <|> variant
@@ -68,13 +72,28 @@ keyword s = do
   notFollowedBy alphaNum
   return s
 
+filterBlock :: Parser [ExprFilter]
+filterBlock = do
+  void $ lexeme $ char '['
+  filters <- lexeme $ sepBy exprFilter (lexeme $ char ',')
+  void $ lexeme $ char ']'
+  return $ filters
+
+exprFilter :: Parser ExprFilter
+exprFilter = do
+  lexeme $ keyword "remove"
+  pat <- pattern
+  return $ EFilter FTRemove pat
+
 pattern :: Parser Pattern
 pattern = do
-  void $ lexeme $ char '%'
   void $ lexeme $ char '('
   p <- patternTupleContent <|> patternVariant
   void $ lexeme $ char ')'
   return p
+
+patternExpr :: Parser Pattern
+patternExpr = patternTuple <|> patternVariant
 
 patternTuple :: Parser Pattern
 patternTuple = do
@@ -85,7 +104,7 @@ patternTuple = do
 
 patternTupleContent :: Parser Pattern
 patternTupleContent = do
-  pats <- lexeme $ sepBy1 pattern (lexeme $ char ',')
+  pats <- lexeme $ sepBy1 patternExpr (lexeme $ char ',')
   if length pats == 1
     then return $ head pats
     else return $ PTuple pats
@@ -93,11 +112,11 @@ patternTupleContent = do
 patternVariant :: Parser Pattern
 patternVariant = do
   identPat <- identPattern
-  pat <- optionMaybe $ pattern
+  pat <- optionMaybe $ patternExpr
   return $ PVariant identPat pat
 
 identPattern :: Parser IdentPattern
-identPattern = try patternWildcard <|> try patternSymbol
+identPattern = patternWildcard <|> patternSymbol
 
 patternWildcard :: Parser IdentPattern
 patternWildcard = (lexeme $ char '_') >> return IPWildcard

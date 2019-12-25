@@ -289,3 +289,10 @@ let Event = event exists (has_result | has_no_result) | does_not_exist;
 ```
 Could be useful for enabling/disabling certain filters
 
+```
+
+(old Event, new Event) [
+  remove (_ event exists has_no_result, _ event exists has_result)
+]
+
+```

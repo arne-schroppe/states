@@ -33,8 +33,8 @@ data ExprFilter = EFilter FilterType Pattern
   deriving (Show)
 
 data FilterType =
-    Remove
---  | Only
+    FTRemove
+--  | FTOnly
   deriving (Show)
 
 data Pattern =

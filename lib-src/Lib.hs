@@ -1,14 +1,14 @@
 module Lib (
   allCombinations
+, testParse
 ) where
 
 import Language.States.Types
-import Language.States.Parser (parse)
+import Language.States.Parser (parse, testParse)
 
 import Data.Maybe (maybeToList)
 import Data.List (intersperse)
 import Control.Monad (void)
-
 
 allCombinations :: String -> [String]
 allCombinations src =
@@ -16,8 +16,7 @@ allCombinations src =
   let expr = parse src' >>= denormalise in
   case expr of
     Left err -> [err]
-    Right expr -> -- [show expr]
-                  let combs = filteredCombinations expr in
+    Right expr -> let combs = filteredCombinations expr in
                   map prettyPrint combs
 
 -- TODO figure out which regex library is good and use regexes instead

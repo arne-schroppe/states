@@ -1,4 +1,4 @@
-import Lib (allCombinations)
+import Lib (allCombinations, testParse)
 
 import System.IO
 import System.Environment (getArgs)
@@ -11,6 +11,7 @@ main = do
   input <- if (length args == 1)
     then return (head args)
     else hGetContents stdin
+  -- testParse input
   let cs = allCombinations input
   void $ mapM putStrLn cs
 
