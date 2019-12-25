@@ -18,6 +18,8 @@ library
   exposed-modules:     Lib
   other-modules:       Language.States.Types
                     ,  Language.States.Parser
+                    ,  Language.States.Denormaliser
+                    ,  Language.States.Combinations
   build-depends:       base >= 4.7 && < 5
                     ,  parsec
   default-language:    Haskell2010
