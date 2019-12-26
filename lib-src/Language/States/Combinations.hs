@@ -19,7 +19,7 @@ combinations expr = case expr of
       mappingFunc :: VariantOption -> [Value]
       mappingFunc (EVarOpt s Nothing)  = [VVariant s Nothing]
       mappingFunc (EVarOpt s (Just e)) = let vs = combinations e in
-                                         map (\x -> VVariant s $ Just x) vs
+                                         map (VVariant s . Just) vs
 
 listCombinations :: [[a]] -> [[a]]
 listCombinations (xs:[])  = map pure xs

@@ -296,3 +296,8 @@ Could be useful for enabling/disabling certain filters
 ]
 
 ```
+
+
+Allow highlighting or filtering via a command line option (using a pattern)
+
+

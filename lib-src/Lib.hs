@@ -36,5 +36,5 @@ prettyPrint :: Value -> String
 prettyPrint val = case val of
   VTuple (v:[]) -> prettyPrint v
   VTuple vals   -> "(" ++ concat (intersperse ", " (map prettyPrint vals)) ++ ")"
-  VVariant s e  -> s ++ maybe "" (\x -> " " ++ prettyPrint x) e
+  VVariant s e  -> s ++ maybe "" ((" " ++) . prettyPrint) e
 

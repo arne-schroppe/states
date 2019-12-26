@@ -9,9 +9,19 @@ module Language.States.Types (
   FilteredExpr(..),
 ) where
 
+
+-- Expressions
 data FilteredExpr =
     FExpr Expr [ExprFilter]
     deriving (Show)
+
+data ExprFilter = EFilter FilterType Pattern
+  deriving (Show)
+
+data FilterType =
+    FTRemove
+--  | FTOnly
+  deriving (Show)
 
 data Expr =
     ETuple [Expr]
@@ -24,19 +34,15 @@ data VariantOption =
     EVarOpt String (Maybe Expr)
   deriving (Show)
 
+
+-- Values
 data Value =
     VTuple [Value]
   | VVariant String (Maybe Value)
   deriving (Show)
 
-data ExprFilter = EFilter FilterType Pattern
-  deriving (Show)
 
-data FilterType =
-    FTRemove
---  | FTOnly
-  deriving (Show)
-
+-- Patterns
 data Pattern =
     PTuple [Pattern]
   | PVariant IdentPattern (Maybe Pattern)
