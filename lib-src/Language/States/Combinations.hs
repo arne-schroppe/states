@@ -28,13 +28,14 @@ listCombinations []       = []
 
 
 filterValues :: [Value] -> [ExprFilter] -> [Value]
-filterValues values filters = filter (not . (flip matchesFilters) filters) values
+filterValues values filters = filter (not . (flip applyRemovalFilter) filters) values
 
-matchesFilters :: Value -> [ExprFilter] -> Bool
-matchesFilters val filters = any (matchesFilter val) filters
+applyRemovalFilter :: Value -> [ExprFilter] -> Bool
+applyRemovalFilter val filters = any (matchesRemovalFilter val) filters
 
-matchesFilter :: Value -> ExprFilter -> Bool
-matchesFilter val (EFilter _ pat) = matchesPattern val pat
+matchesRemovalFilter :: Value -> ExprFilter -> Bool
+matchesRemovalFilter val (EFilter FTRemove pat) = matchesPattern val pat
+matchesRemovalFilter _ _                        = False
 
 matchesPattern :: Value -> Pattern -> Bool
 matchesPattern (VTuple vals) (PTuple pats) = (length vals == length pats) && and (zipWith matchesPattern vals pats)
