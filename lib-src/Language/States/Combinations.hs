@@ -28,10 +28,11 @@ listCombinations []       = []
 
 
 filterValues :: [Value] -> [ExprFilter] -> [Value]
-filterValues values filters = filter (not . (flip applyRemovalFilter) filters) values
+filterValues values filters = applyRemovalFilter values filters
 
-applyRemovalFilter :: Value -> [ExprFilter] -> Bool
-applyRemovalFilter val filters = any (matchesRemovalFilter val) filters
+applyRemovalFilter :: [Value] -> [ExprFilter] -> [Value]
+applyRemovalFilter values filters = filter (shouldGoThroughFilter filters) values
+  where shouldGoThroughFilter filters value = not $ any (matchesRemovalFilter value) filters
 
 matchesRemovalFilter :: Value -> ExprFilter -> Bool
 matchesRemovalFilter val (EFilter FTRemove pat) = matchesPattern val pat
