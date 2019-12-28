@@ -85,9 +85,10 @@ exprFilter = do
   return $ EFilter filterType pat
 
 keywordToFilter :: String -> Parser FilterType
-keywordToFilter "remove" = return FTRemove
-keywordToFilter "only"   = return FTOnly
-keywordToFilter s        = unexpected $ "filter type '" ++ s ++ "'"
+keywordToFilter "remove"    = return FTRemove
+keywordToFilter "only"      = return FTOnly
+keywordToFilter "highlight" = return FTHighlight
+keywordToFilter s           = unexpected $ "filter type '" ++ s ++ "'"
 
 pattern :: Parser Pattern
 pattern = do

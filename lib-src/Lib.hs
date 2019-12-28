@@ -37,4 +37,5 @@ prettyPrint val = case val of
   VTuple (v:[]) -> prettyPrint v
   VTuple vals   -> "(" ++ concat (intersperse ", " (map prettyPrint vals)) ++ ")"
   VVariant s e  -> s ++ maybe "" ((" " ++) . prettyPrint) e
+  VHighlighted v -> "\ESC[92m" ++ prettyPrint v ++ "\ESC[0m"
 

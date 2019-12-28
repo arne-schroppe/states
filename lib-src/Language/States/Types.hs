@@ -28,6 +28,7 @@ data ExprFilter = EFilter FilterType Pattern
 data FilterType =
     FTRemove
   | FTOnly
+  | FTHighlight
   deriving (Show)
 
 
@@ -35,6 +36,7 @@ data FilterType =
 data Value =
     VTuple [Value]
   | VVariant String (Maybe Value)
+  | VHighlighted Value
   deriving (Show)
 
 

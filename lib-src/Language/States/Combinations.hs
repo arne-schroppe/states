@@ -29,11 +29,12 @@ filterValues values filters = mapMaybe ((flip applyFilters) filters) values
 
 applyFilters :: Value -> [ExprFilter] -> Maybe Value
 applyFilters value []     = Just value
-applyFilters value (f:fs) = applyFilter value f >> applyFilters value fs
+applyFilters value (f:fs) = applyFilter value f >>= (flip applyFilters) fs
 
 applyFilter :: Value -> ExprFilter -> Maybe Value
-applyFilter value (EFilter FTRemove pat) = if matchesPattern value pat then Nothing else Just value
-applyFilter value (EFilter FTOnly pat)   = if matchesPattern value pat then Just value else Nothing
+applyFilter value (EFilter FTRemove pat)    = if matchesPattern value pat then Nothing else Just value
+applyFilter value (EFilter FTOnly pat)      = if matchesPattern value pat then Just value else Nothing
+applyFilter value (EFilter FTHighlight pat) = if matchesPattern value pat then Just (VHighlighted value) else Just value
 
 matchesPattern :: Value -> Pattern -> Bool
 matchesPattern (VTuple vals) (PTuple pats) = (length vals == length pats) && and (zipWith matchesPattern vals pats)
@@ -43,5 +44,6 @@ matchesPattern (VVariant i Nothing) (PVariant (IPIdent pi) Nothing)       = (i =
 matchesPattern (VVariant i (Just val)) (PVariant (IPIdent pi) (Just pat)) = (i == pi) && matchesPattern val pat
 matchesPattern (VTuple _) (PVariant IPWildcard Nothing)                   = True
 matchesPattern (VVariant i (Just _)) (PVariant IPWildcard Nothing)        = True
+matchesPattern (VHighlighted v) pat                                       = matchesPattern v pat
 matchesPattern _ _                                                        = False
 
