@@ -9,12 +9,10 @@ import Control.Monad (void)
 main :: IO ()
 main = do
   opts <- execParser cmdLineOptions
-  input <- getStateDefinition (optInput opts)
+  defs <- getStateDefinition (optInput opts)
   -- testParse input
-  let result = allCombinations input (optExtraFilters opts)
-  case result of
-    Left err -> putStrLn err
-    Right cs -> void $ mapM putStrLn cs
+  let result = allCombinations defs (optExtraFilters opts)
+  either putStrLn (mapM_ putStrLn) result
 
 getStateDefinition :: InputStyle -> IO String
 getStateDefinition (FromSource s) = return s
