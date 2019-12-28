@@ -2,8 +2,17 @@
 A small tool to help think about all the states a system can be in.
 
 ## Usage
-Either provide the state definition as the first command line argument or call the tool
-without any arguments to read from stdin.
+```
+Usage: states ([SOURCE] | [-f|--file FILE]) [-F|--filters FILTER-SRC]
+  Print all combinations of states
+
+Available options:
+  SOURCE                   The state definition
+  -f,--file FILE           Read definitions from FILE
+  -F,--filters FILTER-SRC  Additional filters to apply
+  -h,--help                Show this help text
+
+```
 
 ## Example
 Imagine a railroad grade crossing. There can be a train approaching or not. If a train is approaching the red lights can be activated or not (in case of failure). There might also be a car on the tracks. We can get all the states of the system in the following way:
