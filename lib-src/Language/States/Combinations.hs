@@ -23,15 +23,30 @@ listCombinations []       = []
 
 
 filterValues :: [Value] -> [ExprFilter] -> [Value]
-filterValues values filters = applyRemovalFilter values filters
+filterValues values filters =
+  let values' = applyRemovalFilter values filters in
+  applyOnlyFilter values' filters
+
+applyOnlyFilter :: [Value] -> [ExprFilter] -> [Value]
+applyOnlyFilter values filters = filter (shouldGoThroughFilter filters) values
+  where
+    shouldGoThroughFilter :: [ExprFilter] -> Value -> Bool
+    shouldGoThroughFilter filters value = all (matchesOnlyFilter value) filters
+
+    matchesOnlyFilter :: Value -> ExprFilter -> Bool
+    matchesOnlyFilter val (EFilter FTOnly pat) = matchesPattern val pat
+    matchesOnlyFilter _ _                      = True
 
 applyRemovalFilter :: [Value] -> [ExprFilter] -> [Value]
 applyRemovalFilter values filters = filter (shouldGoThroughFilter filters) values
-  where shouldGoThroughFilter filters value = not $ any (matchesRemovalFilter value) filters
+  where
+    shouldGoThroughFilter :: [ExprFilter] -> Value -> Bool
+    shouldGoThroughFilter filters value = not $ any (matchesRemovalFilter value) filters
 
-matchesRemovalFilter :: Value -> ExprFilter -> Bool
-matchesRemovalFilter val (EFilter FTRemove pat) = matchesPattern val pat
-matchesRemovalFilter _ _                        = False
+    matchesRemovalFilter :: Value -> ExprFilter -> Bool
+    matchesRemovalFilter val (EFilter FTRemove pat) = matchesPattern val pat
+    matchesRemovalFilter _ _                        = False
+
 
 matchesPattern :: Value -> Pattern -> Bool
 matchesPattern (VTuple vals) (PTuple pats) = (length vals == length pats) && and (zipWith matchesPattern vals pats)
