@@ -6,14 +6,21 @@ module Language.States.Types (
   IdentPattern(..),
   ExprFilter(..),
   FilterType(..),
-  FilteredExpr(..),
 ) where
 
 
 -- Expressions
-data FilteredExpr =
-    FExpr Expr [ExprFilter]
-    deriving (Show)
+data Expr =
+    ETuple [Expr]
+  | EVariant [VariantOption]
+  | EDecl String Expr Expr
+  | EVariable String
+  | EFiltered Expr [ExprFilter]
+  deriving (Show)
+
+data VariantOption =
+    EVarOpt String (Maybe Expr)
+  deriving (Show)
 
 data ExprFilter = EFilter FilterType Pattern
   deriving (Show)
@@ -21,17 +28,6 @@ data ExprFilter = EFilter FilterType Pattern
 data FilterType =
     FTRemove
 --  | FTOnly
-  deriving (Show)
-
-data Expr =
-    ETuple [Expr]
-  | EVariant [VariantOption]
-  | EDecl String Expr Expr
-  | EVariable String
-  deriving (Show)
-
-data VariantOption =
-    EVarOpt String (Maybe Expr)
   deriving (Show)
 
 

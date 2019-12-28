@@ -6,7 +6,7 @@ module Lib (
 import Language.States.Types
 import Language.States.Parser (parse, testParse)
 import Language.States.Denormaliser (denormalise)
-import Language.States.Combinations (filteredCombinations)
+import Language.States.Combinations (combinations)
 
 import Data.Maybe (maybeToList)
 import Data.List (intersperse)
@@ -17,7 +17,7 @@ allCombinations :: String -> Either String [String]
 allCombinations src = do
   expr <- (parse . removeComments) src
   denormExpr <- denormalise expr
-  let combs = filteredCombinations denormExpr
+  let combs = combinations denormExpr
   return $ map prettyPrint combs
 
 -- TODO figure out which regex library is good and use regexes instead

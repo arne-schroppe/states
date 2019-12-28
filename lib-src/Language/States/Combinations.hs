@@ -1,20 +1,15 @@
 module Language.States.Combinations (
-  filteredCombinations
+  combinations
 ) where
 
 import Language.States.Types
 
 
-filteredCombinations :: FilteredExpr -> [Value]
-filteredCombinations (FExpr expr filters) =
-  let values = combinations expr in
-  filterValues values filters
-
-
 combinations :: Expr -> [Value]
 combinations expr = case expr of
-  ETuple es -> map VTuple $ listCombinations $ map combinations es
-  EVariant es -> concatMap mappingFunc es
+  EFiltered e filters -> let vs = combinations e in filterValues vs filters
+  ETuple es           -> map VTuple $ listCombinations $ map combinations es
+  EVariant es         -> concatMap mappingFunc es
     where
       mappingFunc :: VariantOption -> [Value]
       mappingFunc (EVarOpt s Nothing)  = [VVariant s Nothing]

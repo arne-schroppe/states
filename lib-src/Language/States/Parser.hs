@@ -10,23 +10,23 @@ import Text.ParserCombinators.Parsec as Parsec
 import Text.ParserCombinators.Parsec.Char
 
 
-parse :: String -> Either String FilteredExpr
+parse :: String -> Either String Expr
 parse src = case Parsec.parse parseAll "error" src of
   Left e  -> Left $ show e
   Right r -> Right r
 
-parseAll :: Parser FilteredExpr
+parseAll :: Parser Expr
 parseAll = do
   whitespace
   expr <- filteredExpr
   eof
   return expr
 
-filteredExpr :: Parser FilteredExpr
+filteredExpr :: Parser Expr
 filteredExpr = do
   expr <- expression
   filters <- option [] filterBlock
-  return $ FExpr expr filters
+  return $ EFiltered expr filters
 
 expression :: Parser Expr
 expression = declaration <|> variable <|> tuple <|> variant

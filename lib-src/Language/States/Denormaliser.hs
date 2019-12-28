@@ -6,10 +6,8 @@ import Language.States.Types
 
 
 -- This step inlines all variable declarations
-denormalise :: FilteredExpr -> Either String FilteredExpr
-denormalise (FExpr expr filters) = do
-    e <- denorm [] expr
-    return $ FExpr e filters
+denormalise :: Expr -> Either String Expr
+denormalise expr = denorm [] expr
   where
     denorm :: [(String, Expr)] -> Expr -> Either String Expr
     denorm decls exp =
@@ -19,6 +17,7 @@ denormalise (FExpr expr filters) = do
         ETuple es                     -> do des <- mapM (denorm decls) es; return $ ETuple des
         EVariant opts                 -> do denormOpts <- mapM (denormVarOpt decls) opts
                                             return $ EVariant denormOpts
+        EFiltered expr filters        -> do e <- denorm decls expr; return $ EFiltered e filters
 
     denormVarOpt :: [(String, Expr)] -> VariantOption -> Either String VariantOption
     denormVarOpt decls (EVarOpt i Nothing)  = Right $ EVarOpt i Nothing
