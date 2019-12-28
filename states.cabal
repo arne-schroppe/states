@@ -28,6 +28,7 @@ executable states
   main-is:            Main.hs
   build-depends:      states >=0.1
                     , base
+                    , optparse-applicative
   hs-source-dirs:     cmd-src
   default-language:   Haskell2010
 
