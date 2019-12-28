@@ -79,9 +79,15 @@ filterBlock = do
 
 exprFilter :: Parser ExprFilter
 exprFilter = do
-  lexeme $ keyword "remove"
+  filterKeyword <- lexeme $ symbol -- Not really a symbol, but the parser is good enough
   pat <- pattern
-  return $ EFilter FTRemove pat
+  filterType <- keywordToFilter filterKeyword
+  return $ EFilter filterType pat
+
+keywordToFilter :: String -> Parser FilterType
+keywordToFilter "remove" = return FTRemove
+keywordToFilter "only"   = return FTOnly
+keywordToFilter s        = unexpected $ "filter type '" ++ s ++ "'"
 
 pattern :: Parser Pattern
 pattern = do

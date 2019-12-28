@@ -27,7 +27,7 @@ data ExprFilter = EFilter FilterType Pattern
 
 data FilterType =
     FTRemove
---  | FTOnly
+  | FTOnly
   deriving (Show)
 
 
