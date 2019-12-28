@@ -8,10 +8,16 @@ import Data.List (intersperse)
 import Data.Maybe (maybe)
 import Control.Monad (void, unless)
 import Data.Semigroup ((<>))
+import Data.Functor ((<&>))
 
+data InputStyle =
+    FromSource String
+  | FromStdin
+  | FromFile String
+  deriving (Show)
 
 data Options = Options
-  { optInput        :: Maybe String
+  { optInput        :: InputStyle
   , optExtraFilters :: String
   }
   deriving (Show)
@@ -19,13 +25,17 @@ data Options = Options
 main :: IO ()
 main = do
   opts <- execParser cmdLineOptions
-  let inputOption = optInput opts
-  input <- maybe (hGetContents stdin) return inputOption
+  input <- getStateDefinition (optInput opts)
   -- testParse input
   let result = allCombinations input (optExtraFilters opts)
   case result of
     Left err -> putStrLn err
     Right cs -> void $ mapM putStrLn cs
+
+getStateDefinition :: InputStyle -> IO String
+getStateDefinition (FromSource s) = return s
+getStateDefinition FromStdin      = hGetContents stdin
+getStateDefinition (FromFile f)   = readFile f
 
 cmdLineOptions :: ParserInfo Options
 cmdLineOptions = info (optionsParser <**> helper)
@@ -35,12 +45,31 @@ cmdLineOptions = info (optionsParser <**> helper)
 
 optionsParser :: Parser Options
 optionsParser = Options
-      <$> optional (argument str
-          ( metavar "SOURCE"
-         <> help "The state definition" ))
+      <$> inputOptionParser
       <*> strOption
           ( long "filters"
          <> short 'F'
          <> metavar "FILTER-SRC"
          <> value ""
          <> help "Additional filters to apply" )
+
+inputOptionParser :: Parser InputStyle
+inputOptionParser = sourceOrStdinOptionParser <|> fileInputOptionParser
+
+sourceOrStdinOptionParser :: Parser InputStyle
+sourceOrStdinOptionParser =
+          (optional (argument str
+          ( metavar "SOURCE"
+         <> help "The state definition" ))) <&>
+          (maybe FromStdin FromSource)
+
+fileInputOptionParser :: Parser InputStyle
+fileInputOptionParser =
+          strOption
+          ( long "file"
+         <> short 'f'
+         <> metavar "FILE"
+         <> action "file"
+         <> help "Read definitions from FILE" ) <&>
+          FromFile
+
