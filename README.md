@@ -7,9 +7,9 @@ Usage: states ([SOURCE] | [-f|--file FILE]) [-F|--filters FILTER-SRC]
   Print all combinations of states
 
 Available options:
-  SOURCE                   The state definition
+  SOURCE                   Use definition in SOURCE
   -f,--file FILE           Read definitions from FILE
-  -F,--filters FILTER-SRC  Additional filters to apply
+  -F,--filters FILTER-SRC  Apply additional filters
   -h,--help                Show this help text
 
 ```

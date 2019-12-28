@@ -36,7 +36,7 @@ optionsParser = Options
          <> short 'F'
          <> metavar "FILTER-SRC"
          <> value ""
-         <> help "Additional filters to apply" )
+         <> help "Apply additional filters" )
 
 inputOptionParser :: Parser InputStyle
 inputOptionParser = sourceOrStdinOptionParser <|> fileInputOptionParser
@@ -45,7 +45,7 @@ sourceOrStdinOptionParser :: Parser InputStyle
 sourceOrStdinOptionParser =
           (optional (argument str
           ( metavar "SOURCE"
-         <> help "The state definition" ))) <&>
+         <> help "Use definition in SOURCE" ))) <&>
           (maybe FromStdin FromSource)
 
 fileInputOptionParser :: Parser InputStyle
