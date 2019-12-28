@@ -56,7 +56,7 @@ declaration = do
   void $ try (lexeme $ keywordLet)
   ident <- lexeme $ varName
   void $ lexeme $ char '='
-  declExpr <- expression
+  declExpr <- filteredExpr
   void $ lexeme $ char ';'
   nextExpr <- expression
   return $ EDecl ident declExpr nextExpr
