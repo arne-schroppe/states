@@ -11,7 +11,8 @@ import Data.Semigroup ((<>))
 
 
 data Options = Options
-  { optInput :: Maybe String
+  { optInput        :: Maybe String
+  , optExtraFilters :: String
   }
   deriving (Show)
 
@@ -21,7 +22,7 @@ main = do
   let inputOption = optInput opts
   input <- maybe (hGetContents stdin) return inputOption
   -- testParse input
-  let result = allCombinations input
+  let result = allCombinations input (optExtraFilters opts)
   case result of
     Left err -> putStrLn err
     Right cs -> void $ mapM putStrLn cs
@@ -37,3 +38,9 @@ optionsParser = Options
       <$> optional (argument str
           ( metavar "SOURCE"
          <> help "The state definition" ))
+      <*> strOption
+          ( long "filters"
+         <> short 'F'
+         <> metavar "FILTER-SRC"
+         <> value ""
+         <> help "Additional filters to apply" )

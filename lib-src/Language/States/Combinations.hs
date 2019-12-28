@@ -1,11 +1,16 @@
 module Language.States.Combinations (
-  combinations
+  combinations,
+  filteredCombinations
 ) where
 
 import Language.States.Types
 
 import Data.Maybe (mapMaybe)
 
+filteredCombinations :: Expr -> [ExprFilter] -> [Value]
+filteredCombinations expr extraFilters =
+  let values = combinations expr in
+  filterValues values extraFilters
 
 combinations :: Expr -> [Value]
 combinations expr = case expr of

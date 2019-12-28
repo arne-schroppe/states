@@ -4,20 +4,21 @@ module Lib (
 ) where
 
 import Language.States.Types
-import Language.States.Parser (parse, testParse)
+import Language.States.Parser (parse, testParse, parseFilters)
 import Language.States.Denormaliser (denormalise)
-import Language.States.Combinations (combinations)
+import Language.States.Combinations (combinations, filteredCombinations)
 
 import Data.Maybe (maybeToList)
 import Data.List (intersperse)
 import Control.Monad (void)
 
 
-allCombinations :: String -> Either String [String]
-allCombinations src = do
+allCombinations :: String -> String -> Either String [String]
+allCombinations src extraFilters = do
+  extraFilters <- parseFilters extraFilters
   expr <- (parse . removeComments) src
   denormExpr <- denormalise expr
-  let combs = combinations denormExpr
+  let combs = filteredCombinations denormExpr extraFilters
   return $ map prettyPrint combs
 
 -- TODO figure out which regex library is good and use regexes instead

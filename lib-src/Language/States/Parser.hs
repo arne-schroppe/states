@@ -1,6 +1,7 @@
 module Language.States.Parser (
   Language.States.Parser.parse
 , testParse
+, parseFilters
 ) where
 
 import Language.States.Types
@@ -11,7 +12,12 @@ import Text.ParserCombinators.Parsec.Char
 
 
 parse :: String -> Either String Expr
-parse src = case Parsec.parse parseAll "error" src of
+parse src = case Parsec.parse parseAll "Parse error in source" src of
+  Left e  -> Left $ show e
+  Right r -> Right r
+
+parseFilters :: String -> Either String [ExprFilter]
+parseFilters src = case Parsec.parse (option [] filterBlockContent) "Parse error in extra-filters" src of
   Left e  -> Left $ show e
   Right r -> Right r
 
@@ -73,9 +79,12 @@ keyword s = do
 filterBlock :: Parser [ExprFilter]
 filterBlock = do
   void $ lexeme $ char '['
-  filters <- lexeme $ sepBy exprFilter (lexeme $ char ',')
+  filters <- filterBlockContent
   void $ lexeme $ char ']'
   return $ filters
+
+filterBlockContent :: Parser [ExprFilter]
+filterBlockContent = lexeme $ sepBy exprFilter (lexeme $ char ',')
 
 exprFilter :: Parser ExprFilter
 exprFilter = do
