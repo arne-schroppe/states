@@ -26,6 +26,7 @@ library
 
 executable states
   main-is:            Main.hs
+  other-modules:      Language.States.Options
   build-depends:      states >=0.1
                     , base
                     , optparse-applicative
