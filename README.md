@@ -1,5 +1,5 @@
 # States
-A small tool to help think about all the states a system can be in.
+A tool that lists all the states a system can be in.
 
 ## Usage
 ```
@@ -15,13 +15,16 @@ Available options:
 ```
 
 ## Example
-Imagine a railroad grade crossing. There can be a train approaching or not. If a train is approaching the red lights can be activated or not (in case of failure). There might also be a car on the tracks. We can get all the states of the system in the following way:
+Imagine a railroad grade crossing. There can be a train approaching or not. If
+a train is approaching the red lights can be activated or not (in case of failure).
+There might also be a car on the tracks. You can get all the states of the system
+in the following way:
 
 ```
 states "(train not_approaching | approaching (red_light_flashing | red_light_not_flashing), car on_tracks | not_on_tracks)"
 ```
 
-With the output:
+Which gives the following output:
 
 ```
 (train not_approaching, car on_tracks)
@@ -32,7 +35,7 @@ With the output:
 (train approaching red_light_not_flashing, car not_on_tracks)
 ```
 
-To make things more readable, variables can be used
+To make things more readable, you can use variables:
 ```
 states << EOF
 
@@ -44,11 +47,11 @@ let Car = car on_tracks | not_on_tracks;
 
 EOF
 ```
-Note that variable names must begin with uppercase letters and that a variable 
+Note that variable names must begin with uppercase letters and that a variable
 binding must end with a semicolon.
 
 
-The results can be further refined in a filter block:
+You can further refine the results in a filter-block:
 
 ```
 states << EOF
@@ -66,10 +69,11 @@ let Car = car on_tracks | not_on_tracks;
 EOF
 ```
 
-Three filter operations are currently supported: `remove`, `only` and `highlight`
+Three filter operations are currently supported: `remove`, `only` and `highlight`.
 
 
-You can also specify filters on the command line with the `-F` or `--filters` option
+You can also specify filters on the command line with the `-F` or `--filters` option:
 ```
-states "(train not_approaching | approaching (red_light_flashing | red_light_not_flashing), car on_tracks | not_on_tracks)" -F "only (_, car on_tracks), highlight (_ _ red_light_flashing, _)"
+states "(train not_approaching | approaching (red_light_flashing | red_light_not_flashing), car on_tracks | not_on_tracks)" --filters "only (_, car on_tracks), highlight (_ _ red_light_flashing, _)"
 ```
+
