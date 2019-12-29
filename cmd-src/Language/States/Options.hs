@@ -34,7 +34,7 @@ optionsParser = Options
       <*> strOption
           ( long "filters"
          <> short 'F'
-         <> metavar "FILTER-SRC"
+         <> metavar "FILTERS"
          <> value ""
          <> help "Apply additional filters" )
 

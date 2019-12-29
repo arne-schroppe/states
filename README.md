@@ -3,13 +3,13 @@ A small tool to help think about all the states a system can be in.
 
 ## Usage
 ```
-Usage: states ([SOURCE] | [-f|--file FILE]) [-F|--filters FILTER-SRC]
+Usage: states ([SOURCE] | [-f|--file FILE]) [-F|--filters FILTERS]
   Print all combinations of states
 
 Available options:
   SOURCE                   Use definition in SOURCE
   -f,--file FILE           Read definitions from FILE
-  -F,--filters FILTER-SRC  Apply additional filters
+  -F,--filters FILTERS     Apply additional filters
   -h,--help                Show this help text
 
 ```
@@ -18,7 +18,7 @@ Available options:
 Imagine a railroad grade crossing. There can be a train approaching or not. If a train is approaching the red lights can be activated or not (in case of failure). There might also be a car on the tracks. We can get all the states of the system in the following way:
 
 ```
-states “(train not_approaching | approaching (red_light_flashing | red_light_not_flashing), car on_tracks | not_on_tracks)“
+states "(train not_approaching | approaching (red_light_flashing | red_light_not_flashing), car on_tracks | not_on_tracks)"
 ```
 
 With the output:
@@ -67,3 +67,9 @@ EOF
 ```
 
 Three filter operations are currently supported: `remove`, `only` and `highlight`
+
+
+You can also specify filters on the command line with the `-F` or `--filters` option
+```
+states "(train not_approaching | approaching (red_light_flashing | red_light_not_flashing), car on_tracks | not_on_tracks)" -F "only (_, car on_tracks), highlight (_ _ red_light_flashing, _)"
+```
