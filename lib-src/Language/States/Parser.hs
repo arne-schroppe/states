@@ -35,7 +35,7 @@ filteredExpr = do
   return $ EFiltered expr filters
 
 expression :: Parser Expr
-expression = declaration <|> variable <|> tuple <|> variant
+expression = declaration <|> variable <|> tuple <|> variant <?> "expression"
 
 tuple :: Parser Expr
 tuple = do
@@ -143,7 +143,6 @@ patternSymbol = do
 symbol :: Parser String
 symbol = (quotedString '"') <|> (quotedString '\'') <|> regularSymbol
 
-
 quotedString :: Char -> Parser String
 quotedString quoteChar = do
   void $ lexeme $ char quoteChar
@@ -163,7 +162,7 @@ regularSymbol = do
 
 variable :: Parser Expr
 variable = do
-  ident <- varName
+  ident <- lexeme $ varName
   return $ EVariable ident
 
 varName :: Parser String
