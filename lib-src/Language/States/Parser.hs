@@ -141,7 +141,21 @@ patternSymbol = do
   return $ IPIdent sym
 
 symbol :: Parser String
-symbol = do
+symbol = (quotedString '"') <|> (quotedString '\'') <|> regularSymbol
+
+
+quotedString :: Char -> Parser String
+quotedString quoteChar = do
+  void $ lexeme $ char quoteChar
+  s <- stringContent
+  void $ char quoteChar
+  return s
+
+stringContent :: Parser String
+stringContent = many $ alphaNum <|> char ' '
+
+regularSymbol :: Parser String
+regularSymbol = do
   notFollowedBy $ keywordLet
   first <- lower
   rest  <- identRest
