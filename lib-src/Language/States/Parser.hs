@@ -35,10 +35,10 @@ filteredExpr = do
   return $ EFiltered expr filters
 
 expression :: Parser Expr
-expression = declaration <|> variable <|> tuple <|> variant <?> "expression"
+expression = expression' variant
 
-variantOptExpression :: Parser Expr
-variantOptExpression = declaration <|> variable <|> tuple <|> variantOptVariant <?> "expression"
+expression' :: Parser Expr -> Parser Expr
+expression' variantParser = declaration <|> variable <|> tuple <|> variantParser <?> "expression"
 
 tuple :: Parser Expr
 tuple = do
@@ -51,24 +51,21 @@ tuple = do
 
 variant :: Parser Expr
 variant = do
-  vars <- lexeme $ sepBy1 variantOption (lexeme $ char '|')
+  vars <- lexeme $ sepBy1 innerVariantOption (lexeme $ char '|')
   return $ EVariant vars
 
-variantOptVariant :: Parser Expr
-variantOptVariant = do
-  var <- lexeme $ variantOptOption
+innerVariantOption :: Parser VariantOption
+innerVariantOption = variantOption $ expression' innerVariant
+
+innerVariant :: Parser Expr
+innerVariant = do
+  var <- lexeme $ innerVariantOption
   return $ EVariant [var]
 
-variantOption :: Parser VariantOption
-variantOption = do
+variantOption :: Parser Expr -> Parser VariantOption
+variantOption exprParser = do
   ident <- lexeme $ symbol
-  expr <- optionMaybe $ variantOptExpression
-  return $ EVarOpt ident expr
-
-variantOptOption :: Parser VariantOption
-variantOptOption = do
-  ident <- lexeme $ symbol
-  expr <- optionMaybe $ variantOptExpression
+  expr <- optionMaybe $ exprParser
   return $ EVarOpt ident expr
 
 declaration :: Parser Expr
