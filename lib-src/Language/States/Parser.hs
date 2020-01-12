@@ -157,12 +157,12 @@ symbol = (quotedString '"') <|> (quotedString '\'') <|> regularSymbol
 quotedString :: Char -> Parser String
 quotedString quoteChar = do
   void $ lexeme $ char quoteChar
-  s <- stringContent
+  s <- stringContent quoteChar
   void $ char quoteChar
   return s
 
-stringContent :: Parser String
-stringContent = many $ alphaNum <|> char ' '
+stringContent :: Char -> Parser String
+stringContent quoteChar = many $ satisfy (/= quoteChar)
 
 regularSymbol :: Parser String
 regularSymbol = do
