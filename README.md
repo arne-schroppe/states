@@ -21,7 +21,7 @@ There could also be a car on the tracks. You can get all the states of the syste
 in the following way:
 
 ```
-states "(train not_approaching | approaching (red_light_flashing | red_light_not_flashing), car on_tracks | not_on_tracks)"
+states "(train not_approaching | approaching (red_light_flashing | red_light_not_flashing), car (on_tracks | not_on_tracks))"
 ```
 
 Which gives the following output:
@@ -41,7 +41,7 @@ states << EOF
 
 # Definition of Train and Car
 let Train = train not_approaching | approaching (red_light_flashing | red_light_not_flashing);
-let Car = car on_tracks | not_on_tracks;
+let Car = car (on_tracks | not_on_tracks);
 
 (Train, Car)
 
@@ -57,7 +57,7 @@ You can further refine the results in a filter-block:
 states << EOF
 
 let Train = train not_approaching | approaching (red_light_flashing | red_light_not_flashing);
-let Car = car on_tracks | not_on_tracks;
+let Car = car (on_tracks | not_on_tracks);
 
 (Train, Car) [
   remove (train approaching red_light_flashing, car not_on_tracks),
@@ -74,6 +74,11 @@ Three filter operations are currently supported: `remove`, `only` and `highlight
 
 You can also specify filters on the command line with the `-F` or `--filters` option:
 ```
-states "(train not_approaching | approaching (red_light_flashing | red_light_not_flashing), car on_tracks | not_on_tracks)" --filters "only (_, car on_tracks), highlight (_ _ red_light_flashing, _)"
+states "(train not_approaching | approaching (red_light_flashing | red_light_not_flashing), car (on_tracks | not_on_tracks))" --filters "only (_, car on_tracks), highlight (_ _ red_light_flashing, _)"
+```
+
+If you need to use special characters in your symbols, you can use either single or double quotes (either works):
+```
+states "(train not_approaching | approaching (red_light_flashing | red_light_not_flashing), car on tracks | car not on tracks | 'HoverTechnologies™-enabled car.')"
 ```
 
