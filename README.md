@@ -1,5 +1,5 @@
 # States
-A tool that lists all the states a system can be in.
+A small language to enumerate all the states a system can be in
 
 ## Usage
 ```
@@ -16,8 +16,8 @@ Available options:
 
 ## Example
 Imagine a railroad grade crossing. There can be a train approaching or not. If
-a train is approaching the red lights can be activated or not (in case of failure).
-There might also be a car on the tracks. You can get all the states of the system
+a train is approaching, the red lights might be activated or not (in case of failure).
+There could also be a car on the tracks. You can get all the states of the system
 in the following way:
 
 ```
@@ -35,7 +35,7 @@ Which gives the following output:
 (train approaching red_light_not_flashing, car not_on_tracks)
 ```
 
-To make things more readable, you can use variables:
+You can use variables in your definitions:
 ```
 states << EOF
 
