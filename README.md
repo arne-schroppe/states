@@ -15,13 +15,38 @@ Available options:
 ```
 
 ## Syntax
-```
-Stmnt := 'let' Ident '=' Expr ';' Stmnt   // Definition
-      |  Expr
+Tuples: `(a, b)`
 
-Expr  := Symbol Expr? ('|' Symbol Expr?)*  // Variant
-      | '(' Expr (',' Expr)* ')'           // Tuple
-      | Ident                              // Variable
+_output:_
+```
+(a, b)
+```
+
+Variants: `a | b`
+
+_output:_
+```
+a
+b
+```
+
+Variants can have data: `a (x | y) | b`
+
+_output:_
+```
+a x
+a y
+b
+```
+
+Variants and tuples can be combined: `(a | b, c | d)`
+
+_output:_
+```
+(a, c)
+(a, d)
+(b, c)
+(b, d)
 ```
 
 
