@@ -14,6 +14,17 @@ Available options:
 
 ```
 
+## Syntax
+```
+Stmnt := 'let' Ident '=' Expr ';' Stmnt   // Definition
+      |  Expr
+
+Expr  := Symbol Expr? ('|' Symbol Expr?)*  // Variant
+      | '(' Expr (',' Expr)* ')'           // Tuple
+      | Ident                              // Variable
+```
+
+
 ## Example
 Imagine a railroad grade crossing. There can be a train approaching or not. If
 a train is approaching, the red lights might be activated or not (in case of failure).
