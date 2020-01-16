@@ -30,15 +30,18 @@ parseAll = do
 
 filteredExpr :: Parser Expr
 filteredExpr = do
-  expr <- expression
+  expr <- statement
   filters <- option [] filterBlock
   return $ EFiltered expr filters
+
+statement :: Parser Expr
+statement = declaration <|> expression
 
 expression :: Parser Expr
 expression = expression' variant
 
 expression' :: Parser Expr -> Parser Expr
-expression' variantParser = declaration <|> variable <|> tuple <|> variantParser <?> "expression"
+expression' variantParser = variable <|> tuple <|> variantParser <?> "expression"
 
 tuple :: Parser Expr
 tuple = do
@@ -75,7 +78,7 @@ declaration = do
   void $ lexeme $ char '='
   declExpr <- filteredExpr
   void $ lexeme $ char ';'
-  nextExpr <- expression
+  nextExpr <- statement
   return $ EDecl ident declExpr nextExpr
 
 keywordLet :: Parser String
