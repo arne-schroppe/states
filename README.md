@@ -15,6 +15,14 @@ Available options:
 ```
 
 ## Syntax
+Strings: `a b c d`
+
+_output:_
+```
+a b c d
+```
+
+
 Tuples: `(a, b)`
 
 _output:_
